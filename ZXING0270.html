@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ZXING0270</title>
+
+<style>
+body {
+    font-family: Arial;
+    background-color: #f0f2f5;
+    text-align: center;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+}
+
+.file-list div {
+    margin: 5px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+    <h1>📁 文件共享系统</h1>
+
+    <input type="file" id="fileInput">
+    <br>
+    <button onclick="uploadFile()">上传</button>
+    <button onclick="clearFiles()">清空</button>
+
+    <div class="file-list" id="fileList"></div>
+</div>
+
+<script>
+
+let files = JSON.parse(localStorage.getItem("files") || "[]");
+
+function save() {
+    localStorage.setItem("files", JSON.stringify(files));
+}
+
+function uploadFile() {
+    const input = document.getElementById('fileInput');
+    const file = input.files[0];
+
+    if (!file) {
+        alert('请选择文件');
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        files.push({
+            name: file.name,
+            data: e.target.result
+        });
+        save();
+        displayFiles();
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function displayFiles() {
+    const list = document.getElementById('fileList');
+    list.innerHTML = '';
+
+    files.forEach((file, index) => {
+        const link = document.createElement('a');
+        link.href = file.data;
+        link.download = file.name;
+        link.innerText = '📥 下载：' + file.name;
+
+        const div = document.createElement('div');
+        div.appendChild(link);
+
+        list.appendChild(div);
+    });
+}
+
+function clearFiles() {
+    if (confirm("确定清空？")) {
+        files = [];
+        save();
+        displayFiles();
+    }
+}
+
+displayFiles();
+
+</script>
+
+</body>
+</html>
